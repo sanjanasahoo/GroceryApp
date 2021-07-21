@@ -1,5 +1,4 @@
 const container = document.querySelector('.container')
-console.log(container)
 let canSave = true
 const initial = `<h1>Grocery List App</h1>
 <form>
@@ -25,7 +24,6 @@ let grocery = [
 ]
 let grocerylist = JSON.parse(localStorage.getItem("groceryitems"));
 if (!grocerylist) {
-    console.log(grocerylist, "nahi hai")
     localStorage.setItem('groceryitems', JSON.stringify(grocery))
 }
 function displayItems() {
@@ -77,7 +75,6 @@ form.addEventListener('submit', handleSubmit)
 function handleSubmit(event) {
     event.preventDefault()
     const { itemName, units, price } = event.target.elements
-    console.log(itemName.value, units.value, price.value)
     grocerylist.push({
         item: itemName.value,
         units: +units.value,
@@ -88,9 +85,7 @@ function handleSubmit(event) {
 }
 function deleteRow(e) {
     if (e.target) {
-        console.log(e.target.parentNode.parentNode.children[1])
         const index = parseInt(e.target.parentNode.parentNode.children[1].innerText)
-        console.log(typeof (index - 1))
         grocerylist.splice(index - 1, 1)
         localStorage.setItem('groceryitems', JSON.stringify(grocerylist))
         displayItems()
