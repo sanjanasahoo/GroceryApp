@@ -11,7 +11,7 @@ class App extends React.Component{
                 {
                     item: "abc",
                     units: 3,
-                    price: 20
+                    price: 2
                 }
             ],
             
@@ -37,9 +37,7 @@ class App extends React.Component{
         })
     }
     handleDeleteItem (i){
-        console.log("ok")
         this.setState((currentState)=>{
-            console.log(currentState.grocery.filter((item,index)=> index!==i))
             return {
                 grocery : currentState.grocery.filter((item,index)=> index!==i)
                 
@@ -52,7 +50,6 @@ class App extends React.Component{
             const itemName = e.target.parentNode.parentNode.children[2].innerText
             const itemqty = +e.target.parentNode.parentNode.children[3].innerText
             const itemPrice = +e.target.parentNode.parentNode.children[4].innerText
-            console.log(itemName,itemqty,itemPrice,"updates")
              this.updateEditItem(i,itemName,itemPrice,itemqty)
             e.target.parentNode.parentNode.contentEditable = false
             e.target.innerText = 'Edit'
@@ -75,7 +72,6 @@ class App extends React.Component{
         this.setState((currentState)=>{
             return{
                 grocery : currentState.grocery.map((listItem,index)=>{
-                    console.log(listItem)
                     if(i==index){
                         listItem.item = name
                         listItem.price = price
@@ -121,7 +117,7 @@ class App extends React.Component{
         })
     }
     render(){
-        return (<div>
+        return (<div class="main">
             <h1>Grocery List App</h1>
             <form>
                 <input type="text" name="itemName" placeholder ="Item name" value = {this.state.itemName} onChange={this.updateItemName}/>
@@ -129,13 +125,20 @@ class App extends React.Component{
                 <input type="number" name="price" placeholder ="Price" value = {this.state.price} onChange={this.updateItemPrice}/>
                 <button  id= "submit" onClick={this.handleAddItem} type="submit">Add Item</button>
             </form>
-            
+            <h3>Cheap Things</h3>
             <DisplayItems 
-            grocery={this.state.grocery}
+            grocery={this.state.grocery.filter(item=>item.price<=10)}
+            onRemoveItem ={this.handleDeleteItem}
+            onEditItem = {this.handleEditItem}
+            />
+            <h3>Costly things</h3>
+            <DisplayItems 
+            grocery={this.state.grocery.filter(item=>item.price>10)}
             onRemoveItem ={this.handleDeleteItem}
             onEditItem = {this.handleEditItem}
             />
             <button onClick={this.handleClearAll}>Clear All</button>
+            <GrandTotal grocery={this.state.grocery}/>
             </div>
             
         )
@@ -175,6 +178,16 @@ function DisplayItems(props){
 
     </tbody>
     </table>
+    )
+}
+function GrandTotal(props){
+    const grandtotal = props.grocery.reduce((acc,item)=>{
+      return  acc += item.units * item.price
+    },0)
+    return(
+        <span>
+            GrandTotal : {grandtotal}
+        </span>
     )
 }
 ReactDOM.render(
