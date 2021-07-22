@@ -17,7 +17,8 @@ class App extends React.Component{
             
                 itemName : "",
                 units:'',
-                price:''
+                price:'',
+                canSave:false
             
         }
 
@@ -26,6 +27,14 @@ class App extends React.Component{
         this.updateItemName = this.updateItemName.bind(this)
         this.updateItemPrice = this.updateItemPrice.bind(this)
         this.updateItemUnits = this.updateItemUnits.bind(this)
+        this.handleEditItem = this.handleEditItem.bind(this)
+        this.updateEditItem = this.updateEditItem.bind(this)
+        this.handleClearAll = this.handleClearAll.bind(this)
+    }
+    handleClearAll(){
+        this.setState({
+            grocery:[]
+        })
     }
     handleDeleteItem (i){
         console.log("ok")
@@ -34,6 +43,47 @@ class App extends React.Component{
             return {
                 grocery : currentState.grocery.filter((item,index)=> index!==i)
                 
+            }
+        })
+    }
+     handleEditItem(e,i){
+
+        if(this.state.canSave) { 
+            const itemName = e.target.parentNode.parentNode.children[2].innerText
+            const itemqty = +e.target.parentNode.parentNode.children[3].innerText
+            const itemPrice = +e.target.parentNode.parentNode.children[4].innerText
+            console.log(itemName,itemqty,itemPrice,"updates")
+             this.updateEditItem(i,itemName,itemPrice,itemqty)
+            e.target.parentNode.parentNode.contentEditable = false
+            e.target.innerText = 'Edit'
+            this.setState({
+                    canSave : false
+            })
+
+        } 
+        else {
+            e.target.parentNode.parentNode.children[2].contentEditable = true
+            e.target.parentNode.parentNode.children[3].contentEditable = true
+            e.target.parentNode.parentNode.children[4].contentEditable = true
+            e.target.innerText = 'Save'
+            this.setState({
+                canSave : true
+        })
+        }
+    }
+     updateEditItem(i,name,price,qty){
+        this.setState((currentState)=>{
+            return{
+                grocery : currentState.grocery.map((listItem,index)=>{
+                    console.log(listItem)
+                    if(i==index){
+                        listItem.item = name
+                        listItem.price = price
+                        listItem.units = qty
+                    }
+                    return listItem
+                }),
+                canSave :false
             }
         })
     }
@@ -71,7 +121,6 @@ class App extends React.Component{
         })
     }
     render(){
-        
         return (<div>
             <h1>Grocery List App</h1>
             <form>
@@ -84,7 +133,9 @@ class App extends React.Component{
             <DisplayItems 
             grocery={this.state.grocery}
             onRemoveItem ={this.handleDeleteItem}
+            onEditItem = {this.handleEditItem}
             />
+            <button onClick={this.handleClearAll}>Clear All</button>
             </div>
             
         )
@@ -115,7 +166,7 @@ function DisplayItems(props){
         <td key="price">{item.price}</td>
         <td key="quantity">{item.units}</td>
         <td>{item.units * item.price}</td>
-        <td key="button"><button  type="button"  className="edit">Edit</button></td>
+        <td key="button"><button  type="button" onClick={(e)=> props.onEditItem(e,index)} className="edit">Edit</button></td>
         </tr>
     ))}
     
